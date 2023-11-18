@@ -99,6 +99,28 @@ variable "cloudwatch_agent_configuration_param_arn" {
   default     = null
 }
 
+variable "use_nat64" {
+  description = "Whether or not to enable NAT64 on the NAT instance. Your VPC and at least the public subnet this NAT instance is deployed into must support IPv6"
+  type        = bool
+  default     = false
+}
+
+variable "nat64_configuration" {
+  description = "NAT64 configuration for the NAT instance through TAYGA"
+  type = object({
+    tayga_ipv4_addr    = optional(string, "192.168.255.1"),
+    tayga_ipv6_addr    = optional(string, "2001:db8:1::2"),
+    tayga_dynamic_pool = optional(string, "192.168.0.0/16"),
+  })
+  default = {
+    default = {
+      tayga_ipv4_addr    = "192.168.255.1",
+      tayga_ipv6_addr    = "2001:db8:1::2",
+      tayga_dynamic_pool = "192.168.0.0/16"
+    }
+  }
+}
+
 variable "tags" {
   description = "Tags to apply to resources created within the module"
   type        = map(string)

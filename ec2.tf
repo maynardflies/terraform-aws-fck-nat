@@ -56,6 +56,7 @@ resource "aws_launch_template" "main" {
     subnet_id                   = var.subnet_id
     associate_public_ip_address = true
     security_groups             = [aws_security_group.main.id]
+    ipv6_address_count          = var.use_nat64 ? 1 : null
   }
 
   dynamic "instance_market_options" {
@@ -83,6 +84,10 @@ resource "aws_launch_template" "main" {
     TERRAFORM_EIP_ID                 = length(var.eip_allocation_ids) != 0 ? var.eip_allocation_ids[0] : ""
     TERRAFORM_CWAGENT_ENABLED        = var.use_cloudwatch_agent ? "true" : ""
     TERRAFORM_CWAGENT_CFG_PARAM_NAME = local.cwagent_param_name != null ? local.cwagent_param_name : ""
+    TERRAFORM_NAT64_ENABLED          = var.use_nat64 ? "true" : ""
+    TERRAFORM_NAT64_IPV4_ADDR        = var.use_nat64 ? var.nat64_configuration.tayga_ipv4_addr : ""
+    TERRAFORM_NAT64_IPV6_ADDR        = var.use_nat64 ? var.nat64_configuration.tayga_ipv6_addr : ""
+    TERRAFORM_NAT64_DYNAMIC_POOL     = var.use_nat64 ? var.nat64_configuration.tayga_dynamic_pool : ""
   }))
 
   tags = var.tags
