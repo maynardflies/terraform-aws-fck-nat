@@ -23,7 +23,7 @@ resource "aws_security_group" "main" {
     to_port          = 0
     protocol         = "-1"
     cidr_blocks      = ["${data.aws_vpc.main.cidr_block}"]
-    ipv6_cidr_blocks = var.use_nat64 ? ["${data.aws_vpc.main.ipv6_cidr_block}"] : null
+    ipv6_cidr_blocks = var.use_ipv6 ? ["${data.aws_vpc.main.ipv6_cidr_block}"] : null
   }
 
   egress {
@@ -45,7 +45,7 @@ resource "aws_network_interface" "main" {
   subnet_id          = var.subnet_id
   security_groups    = [aws_security_group.main.id]
   source_dest_check  = false
-  ipv6_address_count = var.use_nat64 ? 1 : null
+  ipv6_address_count = var.use_ipv6 ? 1 : null
 
   tags = merge(var.tags, {
     Name = var.name
@@ -61,7 +61,7 @@ resource "aws_route" "main" {
 }
 
 resource "aws_route" "main_ipv6" {
-  count = var.update_route_table && var.use_nat64 ? 1 : 0
+  count = var.update_route_table && var.use_ipv6 ? 1 : 0
 
   route_table_id              = var.route_table_id
   destination_ipv6_cidr_block = "64:ff9b::/96"
